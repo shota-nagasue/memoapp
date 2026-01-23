@@ -25,5 +25,9 @@ export default defineConfig({
         host: true,
         port: "5173",
         hmr: {host: "localhost"},
+        watch: {
+            usePolling: true, // これを追加：一定間隔でファイルをチェックする
+            interval: 100,    // 0.1秒ごとにチェック
+        },
     },
 })
