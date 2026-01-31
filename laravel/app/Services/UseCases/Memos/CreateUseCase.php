@@ -2,15 +2,12 @@
 
 namespace App\Services\UseCases\Memos;
 
+use App\Models\Memo;
+
 class CreateUseCase
 {
-    public function handle(array $input): array
+    public function handle(array $data): Memo
     {
-        // DBは次。いまは受け取った値をそのまま返す（仮）
-        return [
-            'id' => 1,
-            'title' => $input['title'] ?? '',
-            'content' => $input['content'] ?? '',
-        ];
+        return Memo::create($data);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Memos;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Memos\MemoResource;
 use App\Services\UseCases\Memos\ListUseCase;
 
 class ListController extends Controller
@@ -11,6 +12,7 @@ class ListController extends Controller
 
     public function __invoke()
     {
-        return response()->json($this->useCase->handle());
+        $memos = $this->useCase->handle();
+        return MemoResource::collection($memos);
     }
 }

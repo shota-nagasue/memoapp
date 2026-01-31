@@ -2,11 +2,18 @@
 
 namespace App\Services\UseCases\Memos;
 
+use App\Models\Memo;
+use Illuminate\Database\Eloquent\Collection;
+
 class ListUseCase
 {
-    public function handle(): array
+    /**
+     * @return Collection<int, Memo>
+     */
+    public function handle(): Collection
     {
-        // DBは次。いまは疎通確認用に空配列
-        return [];
+        return Memo::query()
+            ->orderByDesc('created_at')
+            ->get();
     }
 }
