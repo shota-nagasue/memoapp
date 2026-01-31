@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Services\UseCases\Memos;
+use App\Models\Memo;
 
 class DeleteUseCase
 {
-    public function handle(int|string $id): void
+    public function handle(int $id): void
     {
-        // DBは次。いまは何もしない（仮）
-        return;
+        $memo = Memo::findOrFail($id);
+        $memo->delete();
     }
 }
