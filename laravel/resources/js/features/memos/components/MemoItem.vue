@@ -1,6 +1,6 @@
-<!-- laravel/resources/js/features/memos/components/MemoItem.vue -->
 <script setup lang="ts">
 import type { Memo } from "../apis/memoRepository";
+import TrashSvg from "../../../components/svgs/TrashSvg.vue";
 
 const props = defineProps<{
     memo: Memo;
@@ -13,43 +13,33 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <li class="memo-item">
-        <div class="body">
-            <div v-if="props.memo.title" class="title">{{ props.memo.title }}</div>
-            <div class="content">{{ props.memo.content }}</div>
-        </div>
+    <li
+        class="bg-white rounded-lg shadow-sm border border-gray-100 p-5
+           hover:shadow-md transition-all duration-200 group"
+    >
+        <div class="flex justify-between items-start gap-4">
+            <div class="flex-1 min-w-0">
+                <div v-if="props.memo.title" class="text-sm font-semibold text-gray-800 mb-1">
+                    {{ props.memo.title }}
+                </div>
 
-        <button
-            type="button"
-            class="delete"
-            :disabled="props.deleting"
-            @click="emit('delete', props.memo.id)"
-        >
-            削除
-        </button>
+                <div class="text-gray-800 leading-relaxed whitespace-pre-wrap break-words">
+                    {{ props.memo.content }}
+                </div>
+            </div>
+
+            <button
+                type="button"
+                class=" group-hover:opacity-100 transition-opacity
+               inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-medium
+               text-gray-600 hover:text-red-600 hover:bg-red-50
+               disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="props.deleting"
+                :aria-label="`メモ「${(props.memo.title ?? props.memo.content).slice(0, 20)}...」を削除`"
+                @click="emit('delete', props.memo.id)"
+            >
+                <TrashSvg />
+            </button>
+        </div>
     </li>
 </template>
-
-<style scoped>
-.memo-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-.body {
-    flex: 1;
-}
-.title {
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-.content {
-    white-space: pre-wrap;
-}
-.delete {
-    padding: 6px 10px;
-}
-</style>

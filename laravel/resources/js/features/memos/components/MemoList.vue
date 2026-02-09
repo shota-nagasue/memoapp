@@ -2,9 +2,7 @@
 import MemoItem from "./MemoItem.vue";
 import type { Memo } from "../apis/memoRepository";
 
-const props = defineProps<{
-    memos: Memo[];
-}>();
+const props = defineProps<{ memos: Memo[] }>();
 
 const emit = defineEmits<{
     (e: "delete", id: number): void;
@@ -12,7 +10,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <ul class="memo-list">
+    <p class="text-lg">保存したメモ</p>
+    <ul class="space-y-3">
         <MemoItem
             v-for="m in props.memos"
             :key="m.id"
@@ -21,12 +20,3 @@ const emit = defineEmits<{
         />
     </ul>
 </template>
-
-<style scoped>
-.memo-list {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    gap: 10px;
-}
-</style>
