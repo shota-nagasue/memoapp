@@ -1,6 +1,7 @@
-<!-- laravel/resources/js/pages/index.vue -->
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import SimpleLayout from "../layouts/SimpleLayout.vue"; // これを追加
+
 import MemoForm from "../features/memos/components/MemoForm.vue";
 import MemoList from "../features/memos/components/MemoList.vue";
 import {
@@ -9,28 +10,20 @@ import {
     type ValidationErrors,
 } from "../features/memos/apis/memoRepository";
 
-// ===== state =====
+// 以下ロジックはそのまま
 const memos = ref<Memo[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const validationErrors = ref<ValidationErrors>({});
 
-// ===== MemoForm expose 型 =====
-type MemoFormExposed = {
-    clear: () => void;
-};
-
-// MemoForm 参照
+type MemoFormExposed = { clear: () => void };
 const formRef = ref<MemoFormExposed | null>(null);
 
-// ===== 無限fetch防止用ガード =====
 const didFetchOnce = ref(false);
 
-// ===== API =====
 async function fetchMemos() {
     loading.value = true;
     error.value = null;
-
     try {
         memos.value = await memoRepository.list();
     } catch (e: any) {
@@ -43,19 +36,13 @@ async function fetchMemos() {
 async function handleCreate(payload: { title: string; content: string }) {
     error.value = null;
     validationErrors.value = {};
-
     try {
         const created = await memoRepository.create({
             title: payload.title || undefined,
             content: payload.content,
         });
-
-        // 先頭に追加
-        memos.value.unshift(created);
-
-        // フォームをクリア
+        memos.value.unshift((created as any).data);
         (formRef.value as any)?.clear?.();
-
     } catch (e: any) {
         if (e?.status === 422) {
             validationErrors.value = e?.errors ?? {};
@@ -67,7 +54,6 @@ async function handleCreate(payload: { title: string; content: string }) {
 
 async function handleDelete(id: number) {
     error.value = null;
-
     try {
         await memoRepository.delete(id);
         memos.value = memos.value.filter((m) => m.id !== id);
@@ -76,7 +62,6 @@ async function handleDelete(id: number) {
     }
 }
 
-// ===== lifecycle =====
 onMounted(() => {
     if (didFetchOnce.value) return;
     didFetchOnce.value = true;
@@ -85,38 +70,21 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="page">
-        <h1>メモ</h1>
+    <SimpleLayout>
+        <div class="space-y-4">
 
-        <p v-if="error" class="error">{{ error }}</p>
+            <p v-if="error" class="text-red-600">{{ error }}</p>
 
-        <MemoForm
-            ref="formRef"
-            :loading="loading"
-            :validationErrors="validationErrors"
-            @submit="handleCreate"
-        />
+            <MemoForm
+                ref="formRef"
+                :loading="loading"
+                :validationErrors="validationErrors"
+                @submit="handleCreate"
+            />
 
-        <p v-if="loading" class="loading">読み込み中...</p>
+            <p v-if="loading" class="opacity-70">読み込み中...</p>
 
-        <MemoList :memos="memos" @delete="handleDelete" />
-    </div>
+            <MemoList :memos="memos" @delete="handleDelete" />
+        </div>
+    </SimpleLayout>
 </template>
-
-<style scoped>
-.page {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 16px;
-    display: grid;
-    gap: 12px;
-}
-
-.error {
-    color: #d00;
-}
-
-.loading {
-    opacity: 0.7;
-}
-</style>
